@@ -22,7 +22,8 @@ class PayoutOrderJob implements ShouldQueue
      * @return void
      */
     public function __construct(
-        public Order $order
+        public Order $order,
+        public bool $payoutSuccessful = false
     ) {}
 
     /**
@@ -31,8 +32,35 @@ class PayoutOrderJob implements ShouldQueue
      *
      * @return void
      */
+    // public function handle(ApiService $apiService)
+    // {
+    //     try {
+    //         // Attempt to send the payout using the API service
+    //         $apiService->sendPayout($this->order->affiliate->user->email, $this->order->commission_owed);
+
+    //         // If the payout is successful, update the order's payout_status to paid
+    //         DB::transaction(function () {
+    //             $this->order->update(['payout_status' => Order::STATUS_PAID]);
+    //         });
+
+    //         $this->payoutSuccessful = true;
+    //     } catch (\Exception $e) {
+    //         // If an exception is thrown, the payout is not successful
+    //         // Keep the order's payout_status as unpaid
+    //         $this->payoutSuccessful = false;
+    //     }
+    // }
     public function handle(ApiService $apiService)
-    {
-        // TODO: Complete this method
-    }
+{
+    // Attempt to send the payout using the API service
+    $apiService->sendPayout($this->order->affiliate->user->email, $this->order->commission_owed);
+
+    // If the payout is successful, update the order's payout_status to paid
+    DB::transaction(function () {
+        $this->order->update(['payout_status' => Order::STATUS_PAID]);
+    });
+
+    $this->payoutSuccessful = true;
+}
+
 }

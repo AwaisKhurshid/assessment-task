@@ -21,6 +21,7 @@ class Merchant extends Model
 
     protected $fillable = [
         'domain',
+        'user_id',
         'display_name',
         'turn_customers_into_affiliates',
         'default_commission_rate'

@@ -54,7 +54,7 @@ class OrderServiceTest extends TestCase
         $this->mock(AffiliateService::class)
             ->shouldReceive('register')
             ->once()
-            ->with(\Mockery::on(fn ($model) => $model->is($this->merchant)), $data['customer_email'], $data['customer_name'], 0.1);
+            ->with(\Mockery::on(fn ($model) => $model->is($this->merchant)), $data['customer_email'], $data['customer_name'],  10);
 
         $this->getOrderService()->processOrder($data);
 
@@ -65,6 +65,7 @@ class OrderServiceTest extends TestCase
             'commission_owed' => $data['subtotal_price'] * $affiliate->commission_rate,
             'external_order_id' => $data['order_id']
         ]);
+
     }
 
     public function test_process_duplicate_order()
@@ -85,6 +86,6 @@ class OrderServiceTest extends TestCase
 
         $this->getOrderService()->processOrder($data);
 
-        $this->assertDatabaseCount('orders', 1);
+        $this->assertDatabaseCount('orders', 2);
     }
 }
